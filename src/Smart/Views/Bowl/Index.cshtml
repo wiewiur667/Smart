@@ -1,0 +1,102 @@
+﻿@{
+    ViewBag.Title = "Bowls";
+}
+
+<div class="row" >
+    <div class="col-sm-12" style="margin-bottom:20px">
+        <a href="@Url.Action("Create", "Bowl")" class="btn btn-default">Add bowl</a>
+    </div>
+    <div data-bind="foreach: bowls, event: { onload: getBowls()}">
+        <div class="col-sm-6 col-md-4 ">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <span data-bind="text: Name"/>
+                </div>
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                Location:
+                            </div>
+                            <div class="col-sm-6">
+                                <span data-bind="text: Location"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                Food name:
+                            </div>
+                            <div class="col-sm-6">
+                                <span data-bind="text: FoodName"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                Food amount:
+                            </div>
+                            <div class="col-sm-6">
+                                <span data-bind="text: FoodAmount().toFixed(2)"></span>
+                                <span> kg.</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                Alert amount:
+                            </div>
+                            <div class="col-sm-6">
+                                <span data-bind="text: AlertAmount().toFixed(2)"></span>
+                                <span> kg.</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                Locked:
+                            </div>
+                            <div class="col-sm-6">
+                                <span data-bind="text: Locked"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                Dispensing:
+                            </div>
+                            <div class="col-sm-6">
+                                <span data-bind="text: Dispensing"></span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:15px">
+                            <div class="col-sm-12">
+                                Assigned Pets:
+                                <ul class="list-unstyled">
+                                    <li data-bind="foreach: Pets">
+                                        <a class="list col-xs-12" data-bind="attr: { href: '@Url.Action("", "Pet")/' + Pet.ID }, text: Pet.Name"></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row"><hr/></div>
+                        <div class="row">
+                            <div class="col-sm-4 col-xs-4">
+                                <a data-bind="attr: { href: '@Url.Action("Details", "Bowl")/' + Id()}">Details</a>
+                            </div>
+                            <div class="col-sm-4 col-xs-4">
+                                <a data-bind="attr: { href: '@Url.Action("Edit", "Bowl")/' + Id()}">Edit</a>
+                            </div>
+                            <div class="col-sm-4 col-xs-4">
+                                <a data-bind="attr: { href: '@Url.Action("Delete", "Bowl")/' +Id()}">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="loading" data-bind="visible: isLoading">Loading Data...</div>
+</div>
+
+@section Scripts{
+    <script src="~/js/app/ViewModels/Bowl.js"></script>
+<script>
+    ko.applyBindings(new BowlViewModel());
+</script>
+}

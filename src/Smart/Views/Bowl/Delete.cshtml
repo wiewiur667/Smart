@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Bowl Delete";
+}
+
+<div data-bind="with: bowl, event:{ onload: getBowlLoad() }" class="col-sm-6">
+    <h3>Bowl to delete:</h3>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Name: </h4>
+            <p class="list-group-item-text" data-bind="text: Name" />
+        </li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Location: </h4>
+            <p class="list-group-item-text" data-bind="text: Location" />
+        </li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Food name: </h4>
+            <p class="list-group-item-text" data-bind="text: FoodName" />
+        </li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Food amount: </h4>
+            <p class="list-group-item-text" data-bind="text: FoodAmount" />
+        </li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Alert amount: </h4>
+            <p class="list-group-item-text" data-bind="text: AlertAmount" />
+        </li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Assigned Pets:</h4>
+            <ul data-bind="foreach: Pets" class="list-unstyled list-group-item-text">
+                <li>
+                    <span data-bind="text: Pet.Name"></span>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <button type="button" data-bind="click: function() { $root.deleteBowl(Id())}">Delete</button>
+</div>
+@section Scripts{
+    <script src="~/js/app/ViewModels/Bowl.js"></script>
+<script>
+    ko.applyBindings(new BowlViewModel());
+</script>
+}

@@ -1,67 +1,141 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Smart.Models.Api.Interfaces;
+using System.Threading.Tasks;
 using SmartBowl;
-using Smart.Models.Api;
+using Smart.Data;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System.Linq;
 
-
-// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Smart.Controllers.Api
 {
-
     [Route("api/[controller]")]
     public class BowlController : Controller
     {
-        private readonly IBowlRepository _bowlRepository;
+        private IBowlRepository _bowlRepository;
 
-        public BowlController (IBowlRepository bowlRepository)
+        public BowlController(IBowlRepository bowlRepository)
         {
             _bowlRepository = bowlRepository;
         }
 
+        // GET: api/values
         [HttpGet]
-        public IEnumerable<Bowl> GetAllBowls()
+        public IActionResult GetBowls()
         {
-            return _bowlRepository.GetAll();
+            var bowls = _bowlRepository.Get();
+
+            string result = JsonConvert.SerializeObject(bowls, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            return Content(result, "application/json");
         }
 
-        [HttpGet("{id:int}", Name ="GetBowlById")]
-        public IActionResult GetBowlById(int id)
+        // GET api/values/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
         {
-            Bowl b =  _bowlRepository.Find(id);
+            var item = await Task.Run(() =>
+            {
+                return _bowlRepository.GetBowl(id);
+            });
 
-            if(b == null)
+            if (item == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(b);
+            var result = JsonConvert.SerializeObject(item, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            return Content(result, "application/json");
+
         }
 
-        [HttpPost]
-        public IActionResult Add([FromBody] Bowl bowl)
+        [HttpGet("{id}/lock/{locked:bool?}")]
+        public async Task<IActionResult> Lock(int id, bool? locked)
         {
-            if (!ModelState.IsValid)
+            if (locked == null)
             {
-                Response.StatusCode = 400;
-                return new ObjectResult("Is Invalid" + bowl.ToString());
-            }else
-            {
-                var addedBowl = _bowlRepository.Add(bowl);
-
-                if (addedBowl != null)
-                {
-                    string url = Url.RouteUrl("GetBowlById", new { id = addedBowl.ID }, Request.Scheme, Request.Host.ToUriComponent());
-                    Response.StatusCode = 201;
-                    Response.Headers["Location"] = url;
-                    return new ObjectResult(addedBowl);
-                }
-                else
-                {
-                    Response.StatusCode = 400;
-                    return new ObjectResult("Failed To Add Bowl");
-                }
+                return BadRequest();
             }
+            else
+            { 
+                var entity = await Task.Run(() =>
+                {
+                    _bowlRepository.LockBowl(id, (bool)locked);
+                    return _bowlRepository.GetBowl(id);
+                });
+
+                if (entity == null)
+                {
+                    return NotFound();
+                }
+
+                return new NoContentResult();
+            }
+
+        }
+
+        // POST api/values
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody]Bowl bowl)
+        {
+            var entity = await Task.Run(() =>
+            {
+                return _bowlRepository.AddBowl(bowl);
+            });
+
+            return new ObjectResult(entity);
+        }
+
+        
+
+        // PUT api/values/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody]Bowl value)
+        {
+            if(value == null || _bowlRepository.GetBowl(id) == null)
+            {
+                return BadRequest();
+            }
+
+            var entity = await Task.Run(() =>
+            {
+               return _bowlRepository.Update(id, value);
+               
+            });
+
+            if(entity == null)
+            {
+                return NotFound();
+            }
+
+            return new NoContentResult();
+
+        }
+
+        // DELETE api/values/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var entity = await Task.Run(() =>
+            {
+                return _bowlRepository.Delete(id);
+
+            });
+
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            return new NoContentResult();
+
         }
     }
 }

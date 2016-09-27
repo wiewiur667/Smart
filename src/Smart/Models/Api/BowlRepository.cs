@@ -1,79 +1,105 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Smart.Data;
+using Smart.Models.Api.Interfaces;
 using SmartBowl;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace Smart.Models.Api
 {
     public class BowlRepository : IBowlRepository
     {
         private PetsDbContext _context;
-
-        public BowlRepository() { }
+        
         public BowlRepository(PetsDbContext context)
         {
             _context = context;
         }
 
-        public Bowl Add(Bowl item)
+        public IEnumerable<Bowl> Get()
         {
-            _context.Bowl.Add(item);
-            if (_context.SaveChanges() > 0)
+            return _context.Bowl
+                .Include(a => a.BowlPet)
+                .ThenInclude(a => a.Pet)
+                .ToList();
+        }
+
+
+        public Bowl GetBowl(int id)
+        {
+            return _context.Bowl
+                .Include(a=> a.BowlPet)
+                .ThenInclude(b => b.Pet)
+                .FirstOrDefault(c=>c.ID == id);
+        }
+
+        public Bowl AddBowl(Bowl bowl)
+        {
+            _context.Bowl.Add(bowl);
+            _context.SaveChanges();
+            return bowl;
+        }
+
+        public Bowl Update(int id, Bowl bowl)
+        {
+            var entity = GetBowl(id);
+
+            if(entity != null)
             {
-                return item;
+                entity.AlertAmount  = bowl.AlertAmount;
+                entity.BowlPet      = bowl.BowlPet;
+                entity.Dispensing   = bowl.Dispensing;
+                entity.FoodAmount   = bowl.FoodAmount;
+                entity.FoodName     = bowl.FoodName;
+                entity.Location     = bowl.Location;
+                entity.Name         = bowl.Name;
+
+                _context.SaveChanges();
+                return bowl;
             }
             return null;
-
         }
 
-        public Bowl Find(int id)
+        public Bowl AddPet(int id, Pet pet)
         {
-            return _context.Bowl.Include(a => a.BowlPet).SingleOrDefault(b => b.ID == id);
-        }
+            var entity = GetBowl(id);
 
-        public IEnumerable<Bowl> GetAll()
-        {
-            return _context.Bowl.ToList();
-        }
-
-        public Bowl Remove(int id)
-        {
-            Bowl b = _context.Bowl.Include(a => a.BowlPet).First(a => a.ID == id);
-            if (b != null)
+            if(entity!= null)
             {
-                _context.Bowl.Remove(b);
-                _context.SaveChangesAsync();
-                return b;
+                _context.Pet.Include(a => a.BowlPet).FirstOrDefault(b => b.ID == pet.ID);
+                return entity;
             }
 
             return null;
         }
 
-        public async void Update(Bowl item)
+        public Bowl Delete(int id)
         {
-            try
+            var entity = GetBowl(id);
+            if(entity != null)
             {
-                var bowl = _context.Bowl.Include(a => a.BowlPet).SingleOrDefault(b => b.ID == item.ID);
-                bowl.AlertAmount = item.AlertAmount;
-                bowl.Dispensing = item.Dispensing;
-                bowl.FoodAmount = item.FoodAmount;
-                bowl.FoodName = item.FoodName;
-                bowl.GUID = item.GUID;
-                bowl.Location = item.Location;
-                bowl.Locked = item.Locked;
-                bowl.Name = item.Name;
-                bowl.BowlPet = item.BowlPet;
-
-                _context.Update(bowl);
-                await _context.SaveChangesAsync();
-
+                _context.Set<Bowl>().Remove(entity);
+                _context.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+
+            return entity;
+        }
+
+        public void LockBowl(int id, bool locked)
+        {
+            var entity = GetBowl(id);
+            if(entity != null)
             {
-
+                entity.Locked = locked;
+                _context.Bowl.Update(entity);
+                _context.SaveChanges();
             }
+        }
+
+        public void Dispense(int id, decimal amount)
+        {
+            throw new NotImplementedException();
         }
     }
 }
-

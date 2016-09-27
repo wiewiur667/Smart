@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "Pets";
+}
+
+<div class="row" >
+    <div class="col-sm-12" style="margin-bottom:20px">
+        <a href="@Url.Action("Create", "Pet")" class="btn btn-default">Add pet</a>
+    </div>
+    <div data-bind="foreach: pets, event: { onload: $root.getPets()}">
+        <div class="col-sm-6 col-md-4 ">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <span data-bind="text: Name"/>
+                </div>
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                Breed:
+                            </div>
+                            <div class="col-sm-6">
+                                <span data-bind="text: Breed"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                Weight:
+                            </div>
+                            <div class="col-sm-6">
+                                <span data-bind="text: Weight().toFixed(2)"></span>
+                                <span>kg.</span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:15px">
+                            <div class="col-sm-12">
+                                Assigned Bowls:
+                                <ul class="list-unstyled">
+                                    <li data-bind="foreach: Bowls">
+                                        <a class="list col-xs-12" data-bind="attr: { href: '@Url.Action("", "Bowl")/' + Bowl.ID }, text: Bowl.Name"></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row"><hr/></div>
+                        <div class="row">
+                            <div class="col-sm-4 col-xs-4">
+                                <a data-bind="attr: { href: '@Url.Action("Details", "Pet")/' + Id()}">Details</a>
+                            </div>
+                            <div class="col-sm-4 col-xs-4">
+                                <a data-bind="attr: { href: '@Url.Action("Edit", "Pet")/' + Id()}">Edit</a>
+                            </div>
+                            <div class="col-sm-4 col-xs-4">
+                                <a data-bind="attr: { href: '@Url.Action("Delete", "Pet")/' +Id()}">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="loading" data-bind="visible: isLoading">Loading Data...</div>
+</div>
+
+@section Scripts{
+    <script src="~/js/app/ViewModels/Pet.js"></script>
+<script>
+    ko.applyBindings(new PetViewModel());
+</script>
+}

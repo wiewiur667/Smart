@@ -5,14 +5,15 @@ namespace Smart.Data
 {
     public class PetsDbContext : DbContext
     {
-
-        public DbSet<Bowl> Bowl { get; set; }
-        public DbSet<Pet> Pet { get; set; }
-
-        public PetsDbContext(DbContextOptions<PetsDbContext> options) : base(options)
+        public PetsDbContext(DbContextOptions<PetsDbContext> options) 
+            : base(options)
         {
 
         }
+
+
+        public DbSet<Bowl> Bowl { get; set; }
+        public DbSet<Pet> Pet { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -22,18 +23,20 @@ namespace Smart.Data
             // Add your customizations after calling base.OnModelCreating(builder);
 
             builder.Entity<BowlPet>()
-                .HasKey(x => new { x.BowlId, x.PetId });
+                .HasKey(t => new { t.PetId, t.BowlId });
 
             builder.Entity<BowlPet>()
-                .HasOne(x => x.Pet)
-                .WithMany(x => x.BowlPet)
-                .HasForeignKey(x => x.PetId);
+                .HasOne(pet => pet.Bowl)
+                .WithMany(p => p.BowlPet)
+                .HasForeignKey(pet => pet.BowlId);
 
             builder.Entity<BowlPet>()
-                .HasOne(x => x.Bowl)
-                .WithMany(x => x.BowlPet)
-                .HasForeignKey(x => x.BowlId);
+                .HasOne(bowl => bowl.Pet)
+                .WithMany(b => b.BowlPet)
+                .HasForeignKey(bowl => bowl.PetId);
 
         }
+
+        
     }
 }

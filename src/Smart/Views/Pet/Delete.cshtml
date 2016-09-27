@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "Pet Delete";
+}
+
+<div data-bind="with: pet, event:{ onload: getPetLoad() }" class="col-sm-6">
+    <h3>Pet to delete:</h3>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Name: </h4>
+            <p class="list-group-item-text" data-bind="text: Name" />
+        </li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Breed: </h4>
+            <p class="list-group-item-text" data-bind="text: Breed" />
+        </li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Weight: </h4>
+            <span class="list-group-item-text" data-bind="text: Weight().toFixed(2)"></span><span> kg.</span>
+        </li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Assigned Bowls:</h4>
+            <ul data-bind="foreach: Bowls" class="list-unstyled list-group-item-text">
+                <li>
+                    <span data-bind="text: Bowl.Name"></span>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    
+   
+   
+    <button type="button" data-bind="click: function() { $root.deletePet(Id())}">Delete</button>
+</div>
+@section Scripts{
+    <script src="~/js/app/ViewModels/Pet.js"></script>
+<script>
+    ko.applyBindings(new PetViewModel());
+</script>
+}

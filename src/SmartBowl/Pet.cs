@@ -11,31 +11,20 @@ namespace SmartBowl
         [Key]
         public int ID { get; set; }
 
+        [Required]
+        [StringLength(50)]
         public string Name { get; set; }
 
+        [Required]
+        [StringLength(50)]
         public string Breed { get; set; }
 
+        
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:n2}")]
         public decimal Weight { get; set; }
 
-        [Display(Name = "Birthday")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime Birthday { get; set; }
-
-        [Display(Name = "Added Date")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime Added { get; private set; }
-
-        [JsonIgnore]
         [Display(Name = "Assigned Bowls")]
         public ICollection<BowlPet> BowlPet { get; set; }
 
-
-        #region Methods
-        public void SetAdded(DateTime added)
-        {
-            Added = added;
-
-        }
-        #endregion
     }
 }

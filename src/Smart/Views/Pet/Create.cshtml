@@ -1,0 +1,34 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewBag.Title = "Add new Pet";
+}
+
+<div class="col-sm-4">
+    <h3>Add new Pet:</h3>
+    <div id="pet">
+        <form data-bind="submit: createPet">
+            <div class="form-group">
+                <label for="createName">Name:</label>
+                <input type="text" data-bind="value: createName" class="form-control" id="createName" />
+            </div>
+            <div class="form-group">
+                <label for="createBreed">Breed:</label>
+                <input type="text" data-bind="value: createBreed" class="form-control" id="createBreed" />
+            </div>
+            <div class="form-group">
+                <label for="createWeight">Weight:</label>
+                <input type="text" data-bind="value: createWeight" class="form-control" id="createWeight" />
+            </div>
+            <button type="submit">Add</button>
+        </form>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/js/app/ViewModels/Pet.js"></script>
+    <script src="~/js/app/ViewModels/Bowl.js"></script>
+    <script>
+        ko.applyBindings(new PetViewModel(), document.getElementById("pet"));
+    </script>
+}

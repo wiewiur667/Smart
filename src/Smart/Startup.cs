@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Smart.Data;
 using Smart.Models.Api;
+using Smart.Models.Api.Interfaces;
 
 namespace Smart
 {
@@ -33,7 +30,9 @@ namespace Smart
             services.AddDbContext<PetsDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IBowlRepository, BowlRepository>();
+            services.AddScoped<IPetRepository, PetRepository>();
             // Add framework services.
+
             services.AddMvc();
         }
 
@@ -53,13 +52,14 @@ namespace Smart
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseStaticFiles();
 
+            app.UseStaticFiles();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+
             });
         }
     }

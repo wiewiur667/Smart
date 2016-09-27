@@ -5,6 +5,10 @@
     "bootstrap": "3.3.6",
     "jquery": "2.2.0",
     "jquery-validation": "1.14.0",
-    "jquery-validation-unobtrusive": "3.2.6"
+    "jquery-validation-unobtrusive": "3.2.6",
+    "font-awesome": "4.6.1",
+    "bootstrap-side-navbar": "1.0.1",
+    "knockout": "3.4.0",
+    "knockout-mapping": "2.4.1"
   }
 }
